@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 #include <cctype>
+#include <sstream> 
 
 using namespace std;
 
@@ -33,12 +34,14 @@ int main() {
             cout << "Iveskite teigiama skaiciu!\n";
         } else break;
     }
+    cin.ignore(); 
 
     for (int j = 0; j < kiek; j++) {
         cout << "\nIveskite " << j+1 << " studenta:\n";
         Grupe.push_back(ivesk());
     }
 
+    
     int rez_pasirinkimas;
     while (1) {
         cout << "\nKaip skaiciuoti galutini bala?\n";
@@ -47,18 +50,12 @@ int main() {
         cout << "3 - abu\n";
         cout << "Jusu pasirinkimas: ";
         cin >> rez_pasirinkimas;
-        if (cin.fail()) {             
-        cin.clear();               
-        cin.ignore(10000,'\n');    
-        cout << "Netinkamas pasirinkimas! Bandykite dar karta.\n";
-        continue;
-    }
-
+        if (cin.fail()) { cin.clear(); cin.ignore(10000,'\n'); continue; }
         if (rez_pasirinkimas >= 1 && rez_pasirinkimas <= 3) break;
         cout << "Netinkamas pasirinkimas! Bandykite dar karta.\n";
     }
 
-    // Graži lentelė
+    
     cout << "-------------------------------------------------------------\n";
     cout << left << setw(15) << "Vardas"
          << left << setw(15) << "Pavarde";
@@ -67,7 +64,7 @@ int main() {
         cout << right << setw(15) << "Galutinis (Vid.)\n";
     else if (rez_pasirinkimas == 2)
         cout << right << setw(15) << "Galutinis (Med.)\n";
-    else if (rez_pasirinkimas == 3)
+    else
         cout << right << setw(15) << "Galutinis (Vid.)"
              << right << setw(15) << "Galutinis (Med.)\n";
 
@@ -78,41 +75,29 @@ int main() {
              << left << setw(15) << Grupe[i].pav;
 
         if (rez_pasirinkimas == 1)
-            cout << right << setw(15)
-                 << fixed << setprecision(2)
-                 << Grupe[i].rezVid << endl;
-        else if (rez_pasirinkimas == 2) {
-            if (Grupe[i].rezMed >= 0)
-                cout << right << setw(15) << fixed << setprecision(2) << Grupe[i].rezMed << endl;
-            else
-                cout << right << setw(15) << "Neapskaičiuota" << endl;
-        } else if (rez_pasirinkimas == 3) {
-            if (Grupe[i].rezVid >= 0)
-                cout << right << setw(15) << fixed << setprecision(2) << Grupe[i].rezVid;
-            else
-                cout << right << setw(15) << "Neapskaičiuota";
-
-            if (Grupe[i].rezMed >= 0)
-                cout << right << setw(15) << fixed << setprecision(2) << Grupe[i].rezMed << endl;
-            else
-                cout << right << setw(15) << "Neapskaičiuota" << endl;
-        }
+            cout << right << setw(15) << fixed << setprecision(2) << Grupe[i].rezVid << endl;
+        else if (rez_pasirinkimas == 2)
+            cout << right << setw(15) << fixed << setprecision(2) << Grupe[i].rezMed << endl;
+        else
+            cout << right << setw(15) << fixed << setprecision(2) << Grupe[i].rezVid
+                 << right << setw(15) << fixed << setprecision(2) << Grupe[i].rezMed << endl;
     }
 
     return 0;
 }
 
+
 Studentas ivesk() {
     Studentas Laik;
-    int n, m;
+    string input;
+    int m;
 
     
     while (1) {
         cout << "Iveskite varda: ";
         cin >> Laik.vard;
         bool valid = true;
-        for (int i = 0; i < (int)Laik.vard.length(); i++)
-            if (!isalpha(Laik.vard[i])) valid = false;
+        for (size_t i=0;i<Laik.vard.size();i++) if (!isalpha(Laik.vard[i])) valid=false;
         if (valid) break;
         cout << "Vardas gali tureti tik raides!\n";
     }
@@ -122,28 +107,22 @@ Studentas ivesk() {
         cout << "Iveskite pavarde: ";
         cin >> Laik.pav;
         bool valid = true;
-        for (int i = 0; i < (int)Laik.pav.length(); i++)
-            if (!isalpha(Laik.pav[i])) valid = false;
+        for (size_t i=0;i<Laik.pav.size();i++) if (!isalpha(Laik.pav[i])) valid=false;
         if (valid) break;
         cout << "Pavarde gali tureti tik raides!\n";
     }
 
     
+    cin.ignore(); 
+    cout << "Iveskite namu darbu pazymius (vienas per eilute). Baigti tuscia eilute:\n";
     while (1) {
-        cout << "Kiek pazymiu turi studentas: ";
-        cin >> n;
-        if (!cin.fail() && n >= 0) break;
-        cin.clear(); cin.ignore(10000,'\n');
-        cout << "Pazymiu skaicius turi buti neneigiamas!\n";
-    }
-
-    for (int i = 0; i < n; i++) {
-        while (1) {
-            cout << "Iveskite " << i+1 << " pazymi: ";
-            cin >> m;
-            if (!cin.fail() && m >= 0) { Laik.paz.push_back(m); break; }
-            cin.clear(); cin.ignore(10000,'\n');
-            cout << "Pazymys turi buti neneigiamas skaicius!\n";
+        getline(cin, input);
+        if (input.empty()) break; 
+        stringstream ss(input);
+        if (ss >> m && m >= 0 && m<=10 ) {
+            Laik.paz.push_back(m);
+        } else {
+            cout << "Bloga ivestis, iveskitedesimtabaleje sitemoje esanti skaiciu arba tuscia eilute pabaigai.\n";
         }
     }
 
@@ -151,31 +130,27 @@ Studentas ivesk() {
     while (1) {
         cout << "Iveskite egzamina: ";
         cin >> Laik.egzas;
-        if (!cin.fail() && Laik.egzas >= 0) break;
+        if (!cin.fail() && Laik.egzas >= 0 && Laik.egzas <= 10) break;
         cin.clear(); cin.ignore(10000,'\n');
-        cout << "Egzamino rezultatas turi buti neneigiamas skaicius!\n";
+        cout << "Egzamino rezultatas turi buti desimtbaleje sistemoje!\n";
     }
 
     
-    if (n > 0) {
+    if (!Laik.paz.empty()) {
         double suma = 0;
-        for (int i = 0; i < n; i++) suma += Laik.paz[i];
-        Laik.rezVid = Laik.egzas*0.6 + (suma/(double)n)*0.4;
-    } else {
-        Laik.rezVid = -1;
-    }
+        for (size_t i=0;i<Laik.paz.size();i++) suma += Laik.paz[i];
+        Laik.rezVid = Laik.egzas*0.6 + (suma/Laik.paz.size())*0.4;
+    } else Laik.rezVid = -1;
 
-    
-    if (n > 0)
+    if (!Laik.paz.empty())
         Laik.rezMed = Laik.egzas*0.6 + mediana(Laik.paz)*0.4;
-    else
-        Laik.rezMed = -1;
+    else Laik.rezMed = -1;
 
     return Laik;
 }
 
+
 double mediana(const vector<int>& v) {
-    if (v.empty()) return 0;
     vector<int> temp = v;
     sort(temp.begin(), temp.end());
     int n = temp.size();
