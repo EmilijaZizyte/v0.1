@@ -4,7 +4,9 @@
 #include <string>
 #include <algorithm>
 #include <cctype>
-#include <sstream> 
+#include <sstream>
+#include <cstdlib>   // rand()
+#include <ctime>     // time()
 
 using namespace std;
 
@@ -14,17 +16,18 @@ struct Studentas {
     vector<int> paz;
     int egzas;
     double rezVid;
-    double rezMed;  
+    double rezMed;
 };
 
 Studentas ivesk();
 double mediana(const vector<int>& v);
 
 int main() {
+    srand(time(0));  // random generatoriaus paleidimas
+
     vector<Studentas> Grupe;
     int kiek;
 
-    
     while (1) {
         cout << "Kiek studentu norite ivesti? ";
         cin >> kiek;
@@ -32,16 +35,16 @@ int main() {
             cin.clear();
             cin.ignore(10000, '\n');
             cout << "Iveskite teigiama skaiciu!\n";
-        } else break;
+        }
+        else break;
     }
-    cin.ignore(); 
+    cin.ignore();
 
     for (int j = 0; j < kiek; j++) {
-        cout << "\nIveskite " << j+1 << " studenta:\n";
+        cout << "\nIveskite " << j + 1 << " studenta:\n";
         Grupe.push_back(ivesk());
     }
 
-    
     int rez_pasirinkimas;
     while (1) {
         cout << "\nKaip skaiciuoti galutini bala?\n";
@@ -55,7 +58,6 @@ int main() {
         cout << "Netinkamas pasirinkimas! Bandykite dar karta.\n";
     }
 
-    
     cout << "-------------------------------------------------------------\n";
     cout << left << setw(15) << "Vardas"
          << left << setw(15) << "Pavarde";
@@ -86,76 +88,81 @@ int main() {
     return 0;
 }
 
-
 Studentas ivesk() {
     Studentas Laik;
     string input;
     int m;
 
-    
     while (1) {
         cout << "Iveskite varda: ";
         cin >> Laik.vard;
         bool valid = true;
-        for (size_t i=0;i<Laik.vard.size();i++) if (!isalpha(Laik.vard[i])) valid=false;
+        for (size_t i = 0; i < Laik.vard.size(); i++) if (!isalpha(Laik.vard[i])) valid = false;
         if (valid) break;
         cout << "Vardas gali tureti tik raides!\n";
     }
 
-    
     while (1) {
         cout << "Iveskite pavarde: ";
         cin >> Laik.pav;
         bool valid = true;
-        for (size_t i=0;i<Laik.pav.size();i++) if (!isalpha(Laik.pav[i])) valid=false;
+        for (size_t i = 0; i < Laik.pav.size(); i++) if (!isalpha(Laik.pav[i])) valid = false;
         if (valid) break;
         cout << "Pavarde gali tureti tik raides!\n";
     }
 
-    
-    cin.ignore(); 
-    cout << "Iveskite namu darbu pazymius (vienas per eilute). Baigti tuscia eilute:\n";
-    while (1) {
-        getline(cin, input);
-        if (input.empty()) break; 
-        stringstream ss(input);
-        if (ss >> m && m >= 0 && m<=10 ) {
-            Laik.paz.push_back(m);
-        } else {
-            cout << "Bloga ivestis, iveskitedesimtabaleje sitemoje esanti skaiciu arba tuscia eilute pabaigai.\n";
+    int pasirinkimas;
+    cout << "Ar norite pazymius ivesti ranka (1), ar generuoti atsitiktinai (2)? ";
+    cin >> pasirinkimas;
+    cin.ignore();
+
+    if (pasirinkimas == 2) {
+        int nd_kiek = rand() % 10 + 1;
+        for (int i = 0; i < nd_kiek; i++)
+            Laik.paz.push_back(rand() % 11);
+
+        Laik.egzas = rand() % 11;
+        cout << "Sugeneruoti " << nd_kiek << " pazymiai ir egzamino rezultatas: " << Laik.egzas << endl;
+    } else {
+        cout << "Iveskite namu darbu pazymius (vienas per eilute). Baigti tuscia eilute:\n";
+        while (1) {
+            getline(cin, input);
+            if (input.empty()) break;
+            stringstream ss(input);
+            if (ss >> m && m >= 0 && m <= 10)
+                Laik.paz.push_back(m);
+            else
+                cout << "Bloga ivestis, iveskite desimtabaleje sistemoje esanti skaiciu arba tuscia eilute pabaigai.\n";
+        }
+
+        while (1) {
+            cout << "Iveskite egzamina: ";
+            cin >> Laik.egzas;
+            if (!cin.fail() && Laik.egzas >= 0 && Laik.egzas <= 10) break;
+            cin.clear(); cin.ignore(10000, '\n');
+            cout << "Egzamino rezultatas turi buti desimtbaleje sistemoje!\n";
         }
     }
 
-    
-    while (1) {
-        cout << "Iveskite egzamina: ";
-        cin >> Laik.egzas;
-        if (!cin.fail() && Laik.egzas >= 0 && Laik.egzas <= 10) break;
-        cin.clear(); cin.ignore(10000,'\n');
-        cout << "Egzamino rezultatas turi buti desimtbaleje sistemoje!\n";
-    }
-
-    
     if (!Laik.paz.empty()) {
         double suma = 0;
-        for (size_t i=0;i<Laik.paz.size();i++) suma += Laik.paz[i];
-        Laik.rezVid = Laik.egzas*0.6 + (suma/Laik.paz.size())*0.4;
+        for (size_t i = 0; i < Laik.paz.size(); i++) suma += Laik.paz[i];
+        Laik.rezVid = Laik.egzas * 0.6 + (suma / (double)Laik.paz.size()) * 0.4;  // <-- aiškus double dalinimas
     } else Laik.rezVid = -1;
 
     if (!Laik.paz.empty())
-        Laik.rezMed = Laik.egzas*0.6 + mediana(Laik.paz)*0.4;
+        Laik.rezMed = Laik.egzas * 0.6 + mediana(Laik.paz) * 0.4;
     else Laik.rezMed = -1;
 
     return Laik;
 }
-
 
 double mediana(const vector<int>& v) {
     vector<int> temp = v;
     sort(temp.begin(), temp.end());
     int n = temp.size();
     if (n % 2 == 0)
-        return (temp[n/2 - 1] + temp[n/2]) / 2.0;
+        return (temp[n/2-1] + temp[n/2]) / 2.0;
     else
         return temp[n/2];
 }
