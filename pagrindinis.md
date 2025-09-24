@@ -87,36 +87,16 @@ int main() {
                 cout << "Sarasas tuscias.\n";
                 continue;
             }
-
             int rikiuot;
-            while (true)
-            {
-                cout << "\nAr rikiuoti studentus?\n";
-                cout << "1 - taip\n";
-                cout << "2 - ne\n";
-                cin >> rikiuot;
-
-                if (cin.fail()) {               
-                    cin.clear();
-                    cin.ignore(100000, '\n');
-                    cout << "Neteisinga ivestis! Bandykite dar karta.\n";
-                    continue;
-                }
-                if (rikiuot == 1) {
-                    sort(Grupe.begin(), Grupe.end(),
-                        [](const Studentas& a, const Studentas& b) {
-                            return a.vard < b.vard;
-                        });
-                    cout << "Studentai surikiuoti pagal varda.\n";
-                    break;
-                }
-                else if (rikiuot == 2) {
-                    cout << "Studentai nebus rikiuojami.\n";
-                    break;
-                }
-                else {
-                    cout << "Netinkamas pasirinkimas. Studentai nebus rikiuojami.\n";
-                }
+            cout << "\nAr rikiuoti studentus?\n";
+            cout << "1 - taip\n";
+            cout << "2 - ne\n";
+            cin >> rikiuot;
+            if (rikiuot == 1) {
+                sort(Grupe.begin(), Grupe.end(),
+                    [](const Studentas& a, const Studentas& b) {
+                        return a.vard < b.vard;
+                    });
             }
 
             int rez_pasirinkimas;
@@ -206,21 +186,15 @@ Studentas ivesk() {
         cout << "Pavarde gali tureti tik raides. Bandykite dar karta\n";
     }
 
-    cout << "Iveskite namu darbu pazymius (vienas per eilute). Baigti tuscia eilute (spauskite enter):\n";
-    cin.ignore();
-    while (true) {
-        getline(cin, input);
-        if (input.empty()) break;
+    cout << "Iveskite namu darbu pazymius atskirdami tarpais. Baigti tuscia eilute (spauskite enter du kartus):\n";
+	cin.ignore(); //jei nebus, programa paims jau kas yra buve cin
+	getline(cin, input); //nuskaito visos eilutes ivesti, cin 
 
-        stringstream ss(input);
-        int m;
-        string extra;
-        if (ss >> m && !(ss >> extra) && m >= 0 && m <= 10) {
-            Laik.paz.push_back(m);
-        }
-        else {
-            cout << "Bloga ivestis! Iveskite skaiciu 0-10 arba tuscia eilute pabaigai\n";
-        }
+	stringstream ss(input); //stringstream duoda galimybe skaityti is string kaip is failo
+    int m;
+
+	while (ss >> m) { //kol pavyksta nuskaityti skaiciu
+		Laik.paz.push_back(m); //ideda i pazymiu vektoriu
     }
 
     while (true) {
@@ -298,40 +272,40 @@ void nuskaitykIsFailo(vector<Studentas>& Grupe) {
     cout << "Failas nuskaitytas\n";
 }
 
-void apdorokDideliFaila(const string& failoVardas, vector<Studentas>& Grupe) { // string& failoVardas nurodo, kad 
+void apdorokDideliFaila(const string& failoVardas, vector<Studentas>& Grupe) {
     ifstream in(failoVardas);
     if (!in) {
         cout << "Nepavyko atidaryti failo!\n";
         return;
     }
 
-    Grupe.clear(); // Isvalome esama sarasa
-    Grupe.reserve(1'000'000); // Rezervuojame vietos 1 milijonui studentu, taip greiciau nei naudojant push_back kuris gali reikalauti daug kopijavimo
+    Grupe.clear();
+    Grupe.reserve(1'000'000);
 
     string vard, pav, eilute;
     int sk;
 
-    getline(in, eilute); // praleidziame antraste
+    getline(in, eilute);
 
     while (in >> vard >> pav) {
-        Studentas s; // Kuriame nauja studento objekta
+        Studentas s;
         s.vard = vard;
         s.pav = pav;
 
         vector<int> laik;
-        while (in.peek() != '\n' && in >> sk) { // in.peek() nurodoja, kad tikrinsime ar nepasieke naujos eilutes, o in >> sk skaito sekanti skaiciu
-            laik.push_back(sk); // ir prideda ji i laikina pazymiu vektoriu
+        while (in.peek() != '\n' && in >> sk) {
+            laik.push_back(sk);
         }
-        in.ignore(numeric_limits<streamsize>::max(), '\n'); // in.ignore() praleidzia likusia eilutes dali iki naujos eilutes, o taip reikia daryti nes jei nebus pazymiu, tai in.peek() visada bus '\n' ir bus begalinis ciklas
+        in.ignore(numeric_limits<streamsize>::max(), '\n');
 
         if (laik.empty()) continue;
 
-        s.egzas = laik.back(); // paskutinis skaicius yra egzaminas
+        s.egzas = laik.back();
         laik.pop_back();
-        s.paz = std::move(laik); // perkeliam laikina pazymiu vektoriu i studento pazymiu vektoriu
+        s.paz = std::move(laik);
 
         skaiciuokRezultatus(s);
-        Grupe.emplace_back(std::move(s)); // perkeliam studento objekta i Grupe vektoriu, emplace_back sukuria objekta tiesiai vektoriuje, nenaudojant kopijavimo ar klonavimo, std::move nurodo, kad objektas gali buti perkeliamas, o ne kopijuojamas
+        Grupe.emplace_back(std::move(s));
     }
 
     cout << "Nuskaityta studentu: " << Grupe.size() << "\n";
