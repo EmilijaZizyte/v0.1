@@ -38,7 +38,8 @@ int main() {
         cout << "3 - Baigti programa\n";
         cout << "4 - Nuskaityti studentus is failo\n";
         cout << "5 - Nuskaityti labai dideli faila (pvz., 1 mln studentu)\n";
-		cout << "6 - Parodyti kiek studentu neislaike egzamino\n";
+        cout << "6 - Parodyti kiek studentu neislaike egzamino\n";
+        cout << "7 - Parodyti kiek studentu islaike egzamina\n";
         cout << "Jusu pasirinkimas: ";
 
         int pasirinkimas;
@@ -163,6 +164,20 @@ int main() {
             }
             cout << "Studentu, neislaikiusiu egzamino: " << kiekis << "\n";
         }
+        else if (pasirinkimas == 7)
+        {
+            if (Grupe.empty()) {
+                cout << "Sarasas tuscias\n";
+                continue;
+            }
+
+            int skaicius = 0;
+            for (size_t i = 0; i < Grupe.size(); i++)
+            {
+                if (Grupe[i].egzas >= 5) skaicius++;
+            }
+            cout << "Studentu, islaikiusiu egzamina: " << skaicius << "\n";
+        }
         else {
             cout << "Netinkamas pasirinkimas, bandykite dar karta\n";
         }
@@ -202,14 +217,14 @@ Studentas ivesk() {
     }
 
     cout << "Iveskite namu darbu pazymius atskirdami tarpais. Baigti tuscia eilute (spauskite enter du kartus):\n";
-	cin.ignore(); //jei nebus, programa paims jau kas yra buve cin
-	getline(cin, input); //nuskaito visos eilutes ivesti, cin 
+    cin.ignore(); //jei nebus, programa paims jau kas yra buve cin
+    getline(cin, input); //nuskaito visos eilutes ivesti, cin 
 
-	stringstream ss(input); //stringstream duoda galimybe skaityti is string kaip is failo
+    stringstream ss(input); //stringstream duoda galimybe skaityti is string kaip is failo
     int m;
 
-	while (ss >> m) { //kol pavyksta nuskaityti skaiciu
-		Laik.paz.push_back(m); //ideda i pazymiu vektoriu
+    while (ss >> m) { //kol pavyksta nuskaityti skaiciu
+        Laik.paz.push_back(m); //ideda i pazymiu vektoriu
     }
 
     while (true) {
