@@ -19,7 +19,7 @@ struct Studentas {
     double rezMed;
 };
 
-// Funkcijų deklaracijos
+
 double mediana(const vector<int>& v);
 void skaiciuokRezultatus(Studentas& s);
 void nuskaitykIsFailo(vector<Studentas>& Grupe, const string& failoVardas);
@@ -29,19 +29,17 @@ int main() {
     vector<Studentas> Grupe;
     string failoVardas;
 
-    // 1. Paprastas įvedimas: prašome nurodyti failo kelią
     cout << "Iveskite failo kelia su studentu duomenimis: ";
     cin >> failoVardas;
 
-    // 2. Nuskaitymas iš failo
-    nuskaitykIsFailo(Grupe, failoVardas);
+	nuskaitykIsFailo(Grupe, failoVardas); //nuoroda i funkcija skaityti is failo, kuri priskiria reiksmes i Grupe
 
     if (Grupe.empty()) {
         cout << "Nepavyko nuskaityti studentu arba failas tuscias.\n";
         return 0;
     }
 
-    // 3. Galutinio balo pasirinkimas
+    
     int rez_pasirinkimas;
     while (true) {
         cout << "\nKaip skaiciuoti galutini bala?\n";
@@ -50,23 +48,22 @@ int main() {
         cout << "3 - abu\n";
         cout << "Jusu pasirinkimas: ";
         cin >> rez_pasirinkimas;
-        if (!cin.fail() && rez_pasirinkimas >= 1 && rez_pasirinkimas <= 3) break;
-        cin.clear(); cin.ignore(10000, '\n');
+		if (!cin.fail() && rez_pasirinkimas >= 1 && rez_pasirinkimas <= 3) break; //cin.fail() - patikrina ar ivestis yra tinkama, tai yra, ar ivestis yra skaicius
+		cin.clear(); cin.ignore(10000, '\n'); //cin.clear() - isvalo klaidos busena, cin.ignore() - ignoruoja netinkama ivesti
         cout << "Netinkamas pasirinkimas! Bandykite dar karta.\n";
     }
 
-    // 4. Nuspręskime, į kokį failą rašyti rezultatus
-    string failoRezultatai;
+    
+	string failoRezultatai; //striga, i kuri saugosime rezultatus
     cout << "Iveskite failo pavadinima, i kuri issaugoti rezultatus: ";
     cin >> failoRezultatai;
 
-    // 5. Spausdiname rezultatus į failą
-    spausdinkRezultatus(Grupe, rez_pasirinkimas, failoRezultatai);
+    
+	spausdinkRezultatus(Grupe, rez_pasirinkimas, failoRezultatai); //nuoroda i funkcija spausdinti rezultatus i faila, grupe, pasirinkimas, failo pavadinimas
 
     return 0;
 }
 
-// ---------- Funkcijų realizacijos ----------
 
 double mediana(const vector<int>& v) {
     vector<int> temp = v;
@@ -88,7 +85,7 @@ void skaiciuokRezultatus(Studentas& s) {
     }
 }
 
-void nuskaitykIsFailo(vector<Studentas>& Grupe, const string& failoVardas) {
+void nuskaitykIsFailo(vector<Studentas>& Grupe, const string& failoVardas) { //vectorius Grupe perduodamas kaip nuoroda, kad butu galima keisti originalu vektoriu, const string& failoVardas duodamas kaip nuoroda, kad nereiketu kopijuoti stringo
     ifstream in(failoVardas);
     if (!in) {
         cout << "Nepavyko atidaryti failo: " << failoVardas << endl;
@@ -96,14 +93,14 @@ void nuskaitykIsFailo(vector<Studentas>& Grupe, const string& failoVardas) {
     }
 
     string eilute;
-    getline(in, eilute); // praleidžiame antraštę
+	getline(in, eilute); // in reiskia failo srauta, o jis reiskia pirma eilute (antraste), eilute kintamasis duomenu
 
     while (getline(in, eilute)) {
         if (eilute.empty()) continue;
 
-        stringstream ss(eilute);
-        Studentas s;
-        if (!(ss >> s.vard >> s.pav)) {
+		stringstream ss(eilute); //stringstream - leidzia skaityti eilutes kaip is failo
+		Studentas s; //s kuris duoda nauja studento struktura
+		if (!(ss >> s.vard >> s.pav)) { //ss>s vard ir pav - jei nepavyksta nuskaityti vardo ir pavardes
             cout << "Neapskaiciuota: truksta vardas/pavarde -> " << eilute << "\n";
             continue;
         }
@@ -117,7 +114,7 @@ void nuskaitykIsFailo(vector<Studentas>& Grupe, const string& failoVardas) {
             continue;
         }
 
-        s.egzas = laik.back(); laik.pop_back();
+		s.egzas = laik.back(); laik.pop_back(); //paskutinis skaicius yra egzaminas, ji issaugome ir pasaliname is laik
         s.paz = laik;
 
         skaiciuokRezultatus(s);
@@ -127,14 +124,15 @@ void nuskaitykIsFailo(vector<Studentas>& Grupe, const string& failoVardas) {
     cout << "Failas nuskaitytas: " << Grupe.size() << " studentu.\n";
 }
 
-void spausdinkRezultatus(const vector<Studentas>& Grupe, int rez_pasirinkimas, const string& failoVardas) {
-    ofstream out(failoVardas);
+void spausdinkRezultatus(const vector<Studentas>& Grupe, int rez_pasirinkimas, const string& failoVardas) { //const vector<Studentas>& Grupe - perduodame kaip nuoroda, kad nereiketu kopijuoti vektoriaus, bet negalime keisti originalaus vektoriaus
+	ofstream out(failoVardas);//ofstream - failo srautas, skirtas rasymui i faila
     if (!out) {
         cout << "Nepavyko sukurti failo: " << failoVardas << endl;
         return;
     }
-    vector<Studentas> surusiuotaGrupe = Grupe; // kad nekeitume originalaus vektoriaus
-    sort(surusiuotaGrupe.begin(), surusiuotaGrupe.end(), [](const Studentas& a, const Studentas& b) {
+	vector<Studentas> surusiuotaGrupe = Grupe; //sukurti kopija, kad galetume rusiuoti
+	sort(surusiuotaGrupe.begin(), surusiuotaGrupe.end(), [](const Studentas& a, const Studentas& b) { //surusiuojam naudojam lambda funkcija [](const Studentas& a, const Studentas& b) - anonimine funkcija, kuri priima du studentus ir grazina bool reiksme
+		if (a.vard == b.vard) return a.pav < b.pav; //jei vardai vienodi, rusiavimas pagal pavarde
         return a.vard < b.vard;
         });
 
