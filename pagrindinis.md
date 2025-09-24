@@ -87,10 +87,37 @@ int main() {
                 cout << "Sarasas tuscias.\n";
                 continue;
             }
-            sort(Grupe.begin(), Grupe.end(),
-                [](const Studentas& a, const Studentas& b) {
-                    return a.vard < b.vard;
-                });
+
+            int rikiuot;
+            while (true)
+            {
+                cout << "\nAr rikiuoti studentus?\n";
+                cout << "1 - taip\n";
+                cout << "2 - ne\n";
+                cin >> rikiuot;
+
+                if (cin.fail()) {               
+                    cin.clear();
+                    cin.ignore(100000, '\n');
+                    cout << "Neteisinga ivestis! Bandykite dar karta.\n";
+                    continue;
+                }
+                if (rikiuot == 1) {
+                    sort(Grupe.begin(), Grupe.end(),
+                        [](const Studentas& a, const Studentas& b) {
+                            return a.vard < b.vard;
+                        });
+                    cout << "Studentai surikiuoti pagal varda.\n";
+                    break;
+                }
+                else if (rikiuot == 2) {
+                    cout << "Studentai nebus rikiuojami.\n";
+                    break;
+                }
+                else {
+                    cout << "Netinkamas pasirinkimas. Studentai nebus rikiuojami.\n";
+                }
+            }
 
             int rez_pasirinkimas;
             while (true) {
@@ -278,33 +305,33 @@ void apdorokDideliFaila(const string& failoVardas, vector<Studentas>& Grupe) { /
         return;
     }
 
-	Grupe.clear(); // Isvalome esama sarasa
-	Grupe.reserve(1'000'000); // Rezervuojame vietos 1 milijonui studentu, taip greiciau nei naudojant push_back kuris gali reikalauti daug kopijavimo
+    Grupe.clear(); // Isvalome esama sarasa
+    Grupe.reserve(1'000'000); // Rezervuojame vietos 1 milijonui studentu, taip greiciau nei naudojant push_back kuris gali reikalauti daug kopijavimo
 
     string vard, pav, eilute;
     int sk;
 
-	getline(in, eilute); // praleidziame antraste
+    getline(in, eilute); // praleidziame antraste
 
     while (in >> vard >> pav) {
-		Studentas s; // Kuriame nauja studento objekta
+        Studentas s; // Kuriame nauja studento objekta
         s.vard = vard;
         s.pav = pav;
 
         vector<int> laik;
-		while (in.peek() != '\n' && in >> sk) { // in.peek() nurodoja, kad tikrinsime ar nepasieke naujos eilutes, o in >> sk skaito sekanti skaiciu
-			laik.push_back(sk); // ir prideda ji i laikina pazymiu vektoriu
+        while (in.peek() != '\n' && in >> sk) { // in.peek() nurodoja, kad tikrinsime ar nepasieke naujos eilutes, o in >> sk skaito sekanti skaiciu
+            laik.push_back(sk); // ir prideda ji i laikina pazymiu vektoriu
         }
-		in.ignore(numeric_limits<streamsize>::max(), '\n'); // in.ignore() praleidzia likusia eilutes dali iki naujos eilutes, o taip reikia daryti nes jei nebus pazymiu, tai in.peek() visada bus '\n' ir bus begalinis ciklas
+        in.ignore(numeric_limits<streamsize>::max(), '\n'); // in.ignore() praleidzia likusia eilutes dali iki naujos eilutes, o taip reikia daryti nes jei nebus pazymiu, tai in.peek() visada bus '\n' ir bus begalinis ciklas
 
         if (laik.empty()) continue;
 
-		s.egzas = laik.back(); // paskutinis skaicius yra egzaminas
+        s.egzas = laik.back(); // paskutinis skaicius yra egzaminas
         laik.pop_back();
-		s.paz = std::move(laik); // perkeliam laikina pazymiu vektoriu i studento pazymiu vektoriu
+        s.paz = std::move(laik); // perkeliam laikina pazymiu vektoriu i studento pazymiu vektoriu
 
         skaiciuokRezultatus(s);
-		Grupe.emplace_back(std::move(s)); // perkeliam studento objekta i Grupe vektoriu, emplace_back sukuria objekta tiesiai vektoriuje, nenaudojant kopijavimo ar klonavimo, std::move nurodo, kad objektas gali buti perkeliamas, o ne kopijuojamas
+        Grupe.emplace_back(std::move(s)); // perkeliam studento objekta i Grupe vektoriu, emplace_back sukuria objekta tiesiai vektoriuje, nenaudojant kopijavimo ar klonavimo, std::move nurodo, kad objektas gali buti perkeliamas, o ne kopijuojamas
     }
 
     cout << "Nuskaityta studentu: " << Grupe.size() << "\n";
