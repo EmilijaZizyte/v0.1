@@ -84,6 +84,9 @@ int main() {
                 cout << "Sarasas tuscias.\n";
                 continue;
             }
+            sort(Grupe.begin(), Grupe.end(), [](const Studentas& a, const Studentas& b) {////////
+                return a.vard < b.vard;
+                });
 
             int rez_pasirinkimas;
             while (true) {
