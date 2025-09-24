@@ -133,6 +133,10 @@ void spausdinkRezultatus(const vector<Studentas>& Grupe, int rez_pasirinkimas, c
         cout << "Nepavyko sukurti failo: " << failoVardas << endl;
         return;
     }
+    vector<Studentas> surusiuotaGrupe = Grupe; // kad nekeitume originalaus vektoriaus
+    sort(surusiuotaGrupe.begin(), surusiuotaGrupe.end(), [](const Studentas& a, const Studentas& b) {
+        return a.vard < b.vard;
+        });
 
     out << "-------------------------------------------------------------\n";
     out << left << setw(15) << "Vardas" << left << setw(15) << "Pavarde";
