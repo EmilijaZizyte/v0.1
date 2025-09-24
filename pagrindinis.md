@@ -38,6 +38,7 @@ int main() {
         cout << "3 - Baigti programa\n";
         cout << "4 - Nuskaityti studentus is failo\n";
         cout << "5 - Nuskaityti labai dideli faila (pvz., 1 mln studentu)\n";
+		cout << "6 - Parodyti kiek studentu neislaike egzamino\n";
         cout << "Jusu pasirinkimas: ";
 
         int pasirinkimas;
@@ -148,8 +149,22 @@ int main() {
             apdorokDideliFaila(failoVardas, Grupe);
 
         }
+        else if (pasirinkimas == 6)
+        {
+            if (Grupe.empty()) {
+                cout << "Sarasas tuscias\n";
+                continue;
+            }
+
+            int kiekis = 0;
+            for (size_t i = 0; i < Grupe.size(); i++)
+            {
+                if (Grupe[i].egzas < 5) kiekis++;
+            }
+            cout << "Studentu, neislaikiusiu egzamino: " << kiekis << "\n";
+        }
         else {
-            cout << "Netinkamas pasirinkimas.\n";
+            cout << "Netinkamas pasirinkimas, bandykite dar karta\n";
         }
     }
 
